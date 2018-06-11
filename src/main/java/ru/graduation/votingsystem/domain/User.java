@@ -1,9 +1,11 @@
 package ru.graduation.votingsystem.domain;
 
+import org.springframework.util.CollectionUtils;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -75,7 +77,7 @@ public class User extends AbstractNamedEntity {
     }
 
     public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+        this.roles = CollectionUtils.isEmpty(roles) ? Collections.emptySet() : EnumSet.copyOf(roles);
     }
 
     @Override
