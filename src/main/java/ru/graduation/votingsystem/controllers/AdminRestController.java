@@ -29,7 +29,6 @@ public class AdminRestController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.FOUND)
     public User get(@PathVariable Long id) {
         return userRepository.findById(id).orElse(null);
     }
@@ -52,7 +51,6 @@ public class AdminRestController {
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<User> update(@RequestBody User user) {
         User updated = userRepository.save(user);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
