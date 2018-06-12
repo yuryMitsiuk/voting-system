@@ -32,7 +32,6 @@ import static ru.graduation.votingsystem.json.JsonUtil.writeIgnoreProps;
 @SpringBootTest(
         classes = VotingSystemApplication.class)
 @AutoConfigureMockMvc
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ProfileRestControllerTest {
 
     private static final String REST_URL = ProfileRestController.REST_URL;
@@ -55,6 +54,7 @@ public class ProfileRestControllerTest {
     }
 
     @Test
+    @DirtiesContext
     public void testUpdate() throws Exception {
         User updated = new User(USER);
         updated.setEmail("updated@email.com");
@@ -68,6 +68,7 @@ public class ProfileRestControllerTest {
     }
 
     @Test
+    @DirtiesContext
     public void testDelete() throws Exception {
         mockMvc.perform(delete(REST_URL))
                 .andExpect(status().isNoContent());
