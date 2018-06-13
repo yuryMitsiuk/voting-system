@@ -1,5 +1,10 @@
 package ru.graduation.votingsystem.controllers;
 
+import config.TimingRules;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.rules.ExternalResource;
+import org.junit.rules.Stopwatch;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,6 +23,12 @@ import ru.graduation.votingsystem.repositories.UserRepository;
         classes = VotingSystemApplication.class)
 @AutoConfigureMockMvc
 public abstract class AbstractControllerTest {
+
+    @ClassRule
+    public static ExternalResource summary = TimingRules.SUMMARY;
+
+    @Rule
+    public Stopwatch stopwatch = TimingRules.STOPWATCH;
 
     @Autowired
     protected MockMvc mockMvc;
