@@ -47,7 +47,6 @@ public class RestaurantAdminRestController {
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<Restaurant> update(@RequestBody Restaurant restaurant) {
         Restaurant updated = restaurantRepository.save(restaurant);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()

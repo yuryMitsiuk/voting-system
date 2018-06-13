@@ -1,32 +1,17 @@
 package ru.graduation.votingsystem.controllers;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import ru.graduation.votingsystem.VotingSystemApplication;
-import ru.graduation.votingsystem.bootstrap.Bootstrap;
 import ru.graduation.votingsystem.domain.Role;
 import ru.graduation.votingsystem.domain.User;
 import ru.graduation.votingsystem.json.JsonUtil;
-import ru.graduation.votingsystem.repositories.UserRepository;
-
-import javax.annotation.PostConstruct;
 
 import java.util.Arrays;
 
 import static config.TestUtil.readFromJson;
 import static config.UserTestData.*;
-import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -36,20 +21,9 @@ import static ru.graduation.votingsystem.json.JsonUtil.writeIgnoreProps;
 /**
  * Created by yriyMitsiuk on 12.06.2018.
  */
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(
-        classes = VotingSystemApplication.class)
-@AutoConfigureMockMvc
-public class AdminRestControllerTest {
+public class AdminRestControllerTest extends AbstractControllerTest {
 
     private static final String REST_URL = AdminRestController.REST_URL + '/';
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Test
     public void testGetAll() throws Exception {
