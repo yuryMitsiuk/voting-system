@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.graduation.votingsystem.VotingSystemApplication;
+import ru.graduation.votingsystem.repositories.DishRepository;
 import ru.graduation.votingsystem.repositories.RestaurantRepository;
 import ru.graduation.votingsystem.repositories.UserRepository;
 
@@ -38,4 +39,7 @@ public abstract class AbstractControllerTest {
 
     @Autowired
     protected RestaurantRepository restaurantRepository;
+
+    @Autowired
+    protected DishRepository dishRepository;
 }

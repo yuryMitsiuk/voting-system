@@ -9,6 +9,8 @@ import ru.graduation.votingsystem.json.JsonUtil;
 
 import java.util.Arrays;
 
+import static config.DishTestData.DISH1_FALCONE;
+import static config.DishTestData.DISH2_FALCONE;
 import static config.RestaurantTestData.*;
 import static config.UserTestData.*;
 import static config.UserTestData.assertMatch;
@@ -58,11 +60,20 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getAllRestaurants() throws Exception {
+    public void testGetAllRestaurants() throws Exception {
         mockMvc.perform(get(REST_URL+"/restaurants"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(JsonUtil.writeIgnoreProps(Arrays.asList(BELLA_ROSA, PERFETTO, VERANDA, IN_VINO, FALCONE))));
+    }
+
+    @Test
+    public void testGetMenu() throws Exception {
+        mockMvc.perform(get(REST_URL+"/restaurants/"+FALCONE_ID+"/menu"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(JsonUtil.writeIgnoreProps(Arrays.asList(DISH1_FALCONE, DISH2_FALCONE), "restaurant")));
     }
 }

@@ -73,7 +73,7 @@ public class Bootstrap implements ApplicationListener<ContextRefreshedEvent> {
         Dish dish1_invino = new Dish(100020L, "Grilled vegetables", new BigDecimal("2.87"));
         Dish dish2_invino = new Dish(100021L, "Omelette", new BigDecimal("1.17"));
         Dish dish3_invino = new Dish(100022L, "yesterday's Grilled vegetables", new BigDecimal("2.87"), LocalDate.of(2018, 5, 10));
-        Dish dish4_invino = new Dish(100023L, "yesterday's Omelette", new BigDecimal("1.17"), LocalDate.of(2018, 5, 10));
+        Dish dish4_invino = new Dish(100023L, "yesterday's Omelette", new BigDecimal("1.17"), LocalDate.of(2018, 5, 15));
         Stream.of(dish1_invino, dish2_invino, dish3_invino, dish4_invino).peek(dish -> dish.setRestaurant(invino)).forEachOrdered(dishRepository::save);
 
         Dish dish1_falcone = new Dish(100024L, "Pasta Carbonara", new BigDecimal("5.71"));
