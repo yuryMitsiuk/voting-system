@@ -1,5 +1,6 @@
 package ru.graduation.votingsystem.controllers;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,8 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import static ru.graduation.votingsystem.util.Util.orElse;
 
 /**
  * Created by yriyMitsiuk on 13.06.2018.
@@ -30,8 +33,9 @@ public class DishAdminRestController {
     }
 
     @GetMapping(value = "/{id}/menu", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Dish> getAllByRestaurant(@PathVariable Long id) {
-        return dishRepository.findAllByRestaurantIdAndAndDate(id, LocalDate.now());
+    public List<Dish> getAllByRestaurant(@PathVariable Long id,
+                                         @RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return dishRepository.findAllByRestaurantIdAndDate(id, orElse(date, LocalDate.now()));
     }
 
     @GetMapping(value = "/{id}/dishes/{dish_id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -51,7 +55,6 @@ public class DishAdminRestController {
     }
 
     @PutMapping(value = "/{id}/dishes", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Dish> update(@PathVariable Long id, @RequestBody Dish dish) {
         Dish updated = dishRepository.save(dish);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -65,4 +68,10 @@ public class DishAdminRestController {
     public void delete(@PathVariable Long id, @PathVariable Long dish_id) {
         dishRepository.removeByIdAndRestaurantId(dish_id, id);
     }
+
+    @GetMapping(value = "/{id}/menu/history")
+    public List<Dish> getHistory(@PathVariable Long id) {
+        return dishRepository.findAllByRestaurantId(id);
+    }
+
 }

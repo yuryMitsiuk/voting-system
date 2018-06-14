@@ -4,11 +4,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.graduation.votingsystem.AuthorizedUser;
+import ru.graduation.votingsystem.domain.Dish;
 import ru.graduation.votingsystem.domain.Restaurant;
 import ru.graduation.votingsystem.domain.User;
+import ru.graduation.votingsystem.repositories.DishRepository;
 import ru.graduation.votingsystem.repositories.RestaurantRepository;
 import ru.graduation.votingsystem.repositories.UserRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -19,10 +22,12 @@ public class ProfileRestController {
 
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
+    private final DishRepository dishRepository;
 
-    public ProfileRestController(UserRepository userRepository, RestaurantRepository restaurantRepository) {
+    public ProfileRestController(UserRepository userRepository, RestaurantRepository restaurantRepository, DishRepository dishRepository) {
         this.userRepository = userRepository;
         this.restaurantRepository = restaurantRepository;
+        this.dishRepository = dishRepository;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -45,5 +50,10 @@ public class ProfileRestController {
     @GetMapping(value = "/restaurants", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Restaurant> getAllRestaurants() {
         return restaurantRepository.findAll();
+    }
+
+    @GetMapping(value = "/restaurants/{id}/menu")
+    public List<Dish> getMenu(@PathVariable Long id) {
+        return dishRepository.findAllByRestaurantIdAndDate(id, LocalDate.now());
     }
 }

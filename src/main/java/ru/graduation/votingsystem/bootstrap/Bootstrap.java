@@ -12,6 +12,7 @@ import ru.graduation.votingsystem.repositories.RestaurantRepository;
 import ru.graduation.votingsystem.repositories.UserRepository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.stream.Stream;
 
 @Component
@@ -37,9 +38,7 @@ public class Bootstrap implements ApplicationListener<ContextRefreshedEvent> {
         User user = new User(100000L, "user", "user@gmail.com", "password", Role.ROLE_USER);
         User otheruser = new User(100001L, "otheruser", "otheruser@yahoo.com", "otherpassword", Role.ROLE_USER);
         User admin = new User(100002L, "admin", "admin@yandex.ru", "password", Role.ROLE_USER, Role.ROLE_ADMIN);
-        userRepository.save(user);
-        userRepository.save(otheruser);
-        userRepository.save(admin);
+        Stream.of(user, otheruser, admin).forEachOrdered(userRepository::save);
     }
 
     private void loadRestaurantsAndDishes() {
@@ -48,24 +47,41 @@ public class Bootstrap implements ApplicationListener<ContextRefreshedEvent> {
         Restaurant veranda = new Restaurant(100005L, "Veranda");
         Restaurant invino = new Restaurant(100006L, "In Vino");
         Restaurant falcone = new Restaurant(100007L, "Falcone");
-
-        Stream.of(bellaRosa, perfetto, veranda, invino, falcone).forEach(restaurantRepository::save);
+        Stream.of(bellaRosa, perfetto, veranda, invino, falcone).forEachOrdered(restaurantRepository::save);
 
         Dish dish1_bellaRosa = new Dish(100008L, "Potato Wedges", new BigDecimal("3.79"));
         Dish dish2_bellaRosa = new Dish(100009L, "Baked Beans", new BigDecimal("7.55"));
-        Dish dish3_bellaRosa = new Dish(100010L, "Cole Slaw", new BigDecimal("1.88"));
-        Stream.of(dish1_bellaRosa, dish2_bellaRosa, dish3_bellaRosa).forEach(dish -> {
-            dish.setRestaurant(bellaRosa);
-            dishRepository.save(dish);
-        });
+        Dish dish3_bellaRosa = new Dish(100010L, "Cole Slaw", new BigDecimal("1.88"), LocalDate.of(2018, 5, 10));
+        Stream.of(dish1_bellaRosa, dish2_bellaRosa, dish3_bellaRosa).peek(dish -> dish.setRestaurant(bellaRosa))
+                .forEachOrdered(dishRepository::save);
 
         Dish dish1_perfetto = new Dish(100011L, "Soft Drink", new BigDecimal("1.69"));
         Dish dish2_perfetto = new Dish(100012L, "Iced Tea", new BigDecimal("2.49"));
         Dish dish3_perfetto = new Dish(100013L, "Lemonade", new BigDecimal("3.49"));
-        Dish dish4_perfetto = new Dish(100014L, "Strawberry Lemonade", new BigDecimal("4.15"));
-        Stream.of(dish1_perfetto, dish2_perfetto, dish3_perfetto, dish4_perfetto).forEach(dish -> {
-            dish.setRestaurant(perfetto);
-            dishRepository.save(dish);
-        });
+        Dish dish4_perfetto = new Dish(100014L, "Strawberry Lemonade", new BigDecimal("4.15"), LocalDate.of(2018, 5, 10));
+        Stream.of(dish1_perfetto, dish2_perfetto, dish3_perfetto, dish4_perfetto).peek(dish -> dish.setRestaurant(perfetto))
+                .forEachOrdered(dishRepository::save);
+
+        Dish dish1_veranda = new Dish(100015L, "Оnion soup", new BigDecimal("1.15"));
+        Dish dish2_veranda = new Dish(100016L, "Tomato soup", new BigDecimal("2.05"));
+        Dish dish3_veranda = new Dish(100017L, "Mushroom cream soup", new BigDecimal("2.75"));
+        Dish dish4_veranda = new Dish(100018L, "Chicken broth with eggs and croutons", new BigDecimal("4.05"), LocalDate.of(2018, 5, 10));
+        Dish dish5_veranda = new Dish(100019L, "Garlic bread", new BigDecimal("0.35"), LocalDate.of(2018, 5, 10));
+        Stream.of(dish1_veranda, dish2_veranda, dish3_veranda, dish4_veranda, dish5_veranda).peek(dish -> dish.setRestaurant(veranda))
+                .forEachOrdered(dishRepository::save);
+
+        Dish dish1_invino = new Dish(100020L, "Grilled vegetables", new BigDecimal("2.87"));
+        Dish dish2_invino = new Dish(100021L, "Omelette", new BigDecimal("1.17"));
+        Dish dish3_invino = new Dish(100022L, "yesterday's Grilled vegetables", new BigDecimal("2.87"), LocalDate.of(2018, 5, 10));
+        Dish dish4_invino = new Dish(100023L, "yesterday's Omelette", new BigDecimal("1.17"), LocalDate.of(2018, 5, 10));
+        Stream.of(dish1_invino, dish2_invino, dish3_invino, dish4_invino).peek(dish -> dish.setRestaurant(invino)).forEachOrdered(dishRepository::save);
+
+        Dish dish1_falcone = new Dish(100024L, "Pasta Carbonara", new BigDecimal("5.71"));
+        Dish dish2_falcone = new Dish(100025L, "Risotto", new BigDecimal("6.02"));
+        Dish dish3_falcone = new Dish(100026L, "yesterday's Pasta Carbonara", new BigDecimal("5.71"), LocalDate.of(2018, 5, 10));
+        Dish dish4_falcone = new Dish(100027L, "yesterday's Risotto", new BigDecimal("6.02"), LocalDate.of(2018, 5, 10));
+        Stream.of(dish1_falcone, dish2_falcone, dish3_falcone, dish4_falcone).peek(dish -> dish.setRestaurant(falcone)).forEachOrdered(dishRepository::save);
+
+
     }
 }
