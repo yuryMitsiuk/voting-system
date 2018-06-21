@@ -15,6 +15,7 @@ import ru.graduation.votingsystem.VotingSystemApplication;
 import ru.graduation.votingsystem.repositories.DishRepository;
 import ru.graduation.votingsystem.repositories.RestaurantRepository;
 import ru.graduation.votingsystem.repositories.UserRepository;
+import ru.graduation.votingsystem.service.VoteService;
 
 /**
  * Created by yriyMitsiuk on 13.06.2018.
@@ -42,4 +43,7 @@ public abstract class AbstractControllerTest {
 
     @Autowired
     protected DishRepository dishRepository;
+
+    @Autowired
+    protected VoteService voteService;
 }

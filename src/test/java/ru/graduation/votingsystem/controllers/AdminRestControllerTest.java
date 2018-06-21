@@ -9,9 +9,11 @@ import ru.graduation.votingsystem.domain.User;
 import ru.graduation.votingsystem.json.JsonUtil;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static config.TestUtil.readFromJson;
 import static config.UserTestData.*;
+import static config.VoteTestData.RETURNED_VOTETO_OTHERUSER;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -89,5 +91,15 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(writeIgnoreProps(USER)));
+    }
+
+    @Test
+    public void testGetVotesForUser() throws Exception {
+        mockMvc.perform(get(REST_URL+"vote").param("userId", "100001"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().json(JsonUtil.writeIgnoreProps(Collections.singletonList(RETURNED_VOTETO_OTHERUSER))));
+
     }
 }

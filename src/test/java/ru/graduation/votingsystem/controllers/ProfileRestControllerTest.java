@@ -6,7 +6,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.graduation.votingsystem.domain.User;
 import ru.graduation.votingsystem.json.JsonUtil;
+import ru.graduation.votingsystem.to.VoteTo;
 
+import java.time.*;
 import java.util.Arrays;
 
 import static config.DishTestData.DISH1_FALCONE;
@@ -14,6 +16,7 @@ import static config.DishTestData.DISH2_FALCONE;
 import static config.RestaurantTestData.*;
 import static config.UserTestData.*;
 import static config.UserTestData.assertMatch;
+import static config.VoteTestData.CREATED;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -75,5 +78,20 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(JsonUtil.writeIgnoreProps(Arrays.asList(DISH1_FALCONE, DISH2_FALCONE), "restaurant")));
+    }
+
+    @Test
+    public void testVote() throws Exception {
+        if (LocalTime.now().isBefore(LocalTime.of(11, 0))) {
+            System.out.println(LocalDate.now());
+            VoteTo voteTo = new VoteTo(FALCONE);
+            mockMvc.perform(post(REST_URL + "/vote")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(JsonUtil.writeValue(voteTo)))
+                    .andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andExpect(content().json(JsonUtil.writeIgnoreProps(CREATED)));
+        }
     }
 }

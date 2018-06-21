@@ -33,7 +33,7 @@ public class VoteServiceImpl implements VoteService {
         Objects.requireNonNull(voteTo);
         Vote vote = VoteUtil.createVoteFromVoteTo(voteTo);
         vote.getIdentity().setUser(userRepository.getOne(AuthorizedUser.id()));
-        if (voteRepository.existsById(vote.getIdentity()) && LocalTime.now().isAfter(LocalTime.of(23, 0)))
+        if (voteRepository.existsById(vote.getIdentity()) && LocalTime.now().isAfter(LocalTime.of(11, 0)))
             return null;
         return VoteUtil.asTo(voteRepository.save(vote));
     }
