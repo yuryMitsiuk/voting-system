@@ -6,7 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.graduation.votingsystem.domain.Restaurant;
+import ru.graduation.votingsystem.domain.Vote;
 import ru.graduation.votingsystem.repositories.RestaurantRepository;
+import ru.graduation.votingsystem.service.VoteService;
 
 import java.net.URI;
 import java.util.List;
@@ -21,9 +23,11 @@ public class RestaurantAdminRestController {
     static final String REST_URL = "/rest/admin/restaurants";
 
     private final RestaurantRepository restaurantRepository;
+    private final VoteService voteService;
 
-    public RestaurantAdminRestController(RestaurantRepository restaurantRepository) {
+    public RestaurantAdminRestController(RestaurantRepository restaurantRepository, VoteService voteService) {
         this.restaurantRepository = restaurantRepository;
+        this.voteService = voteService;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -64,5 +68,10 @@ public class RestaurantAdminRestController {
     @GetMapping(value = "/by", produces = MediaType.APPLICATION_JSON_VALUE)
     public Restaurant getByName(@RequestParam("name") String name) {
         return restaurantRepository.findByName(name);
+    }
+
+    @GetMapping("/vote")
+    public List<Vote> getAllVoteForRestaurants(@RequestParam("restaurantId") long restaurantId) {
+        return voteService.getAllForRestaurant(restaurantId);
     }
 }

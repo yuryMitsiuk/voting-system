@@ -3,13 +3,11 @@ package ru.graduation.votingsystem.bootstrap;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
-import ru.graduation.votingsystem.domain.Dish;
-import ru.graduation.votingsystem.domain.Restaurant;
-import ru.graduation.votingsystem.domain.Role;
-import ru.graduation.votingsystem.domain.User;
+import ru.graduation.votingsystem.domain.*;
 import ru.graduation.votingsystem.repositories.DishRepository;
 import ru.graduation.votingsystem.repositories.RestaurantRepository;
 import ru.graduation.votingsystem.repositories.UserRepository;
+import ru.graduation.votingsystem.repositories.VoteRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -21,17 +19,20 @@ public class Bootstrap implements ApplicationListener<ContextRefreshedEvent> {
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
     private final DishRepository dishRepository;
+    private final VoteRepository voteRepository;
 
-    public Bootstrap(UserRepository userRepository, RestaurantRepository restaurantRepository, DishRepository dishRepository) {
+    public Bootstrap(UserRepository userRepository, RestaurantRepository restaurantRepository, DishRepository dishRepository, VoteRepository voteRepository) {
         this.userRepository = userRepository;
         this.restaurantRepository = restaurantRepository;
         this.dishRepository = dishRepository;
+        this.voteRepository = voteRepository;
     }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         loadUsers();
         loadRestaurantsAndDishes();
+        loadVotes();
     }
 
     private void loadUsers() {
@@ -81,7 +82,13 @@ public class Bootstrap implements ApplicationListener<ContextRefreshedEvent> {
         Dish dish3_falcone = new Dish(100026L, "yesterday's Pasta Carbonara", new BigDecimal("5.71"), LocalDate.of(2018, 5, 10));
         Dish dish4_falcone = new Dish(100027L, "yesterday's Risotto", new BigDecimal("6.02"), LocalDate.of(2018, 5, 10));
         Stream.of(dish1_falcone, dish2_falcone, dish3_falcone, dish4_falcone).peek(dish -> dish.setRestaurant(falcone)).forEachOrdered(dishRepository::save);
+    }
 
-
+    private void loadVotes() {
+        Vote vote1 = new Vote(new VoteIdentity(userRepository.getOne(100000L)), restaurantRepository.getOne(100003L));
+        Vote vote2 = new Vote(new VoteIdentity(userRepository.getOne(100001L)), restaurantRepository.getOne(100003L));
+        Vote vote3 = new Vote(new VoteIdentity(userRepository.getOne(100002L)), restaurantRepository.getOne(100003L));
+        Vote vote4 = new Vote(new VoteIdentity(userRepository.getOne(100000L), LocalDate.of(2018, 5, 10)), restaurantRepository.getOne(100003L));
+        Stream.of(vote1, vote2, vote3, vote4).forEach(voteRepository::save);
     }
 }

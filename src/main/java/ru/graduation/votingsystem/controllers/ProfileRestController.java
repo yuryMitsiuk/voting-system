@@ -10,6 +10,8 @@ import ru.graduation.votingsystem.domain.User;
 import ru.graduation.votingsystem.repositories.DishRepository;
 import ru.graduation.votingsystem.repositories.RestaurantRepository;
 import ru.graduation.votingsystem.repositories.UserRepository;
+import ru.graduation.votingsystem.service.VoteService;
+import ru.graduation.votingsystem.to.VoteTo;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,11 +25,13 @@ public class ProfileRestController {
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
     private final DishRepository dishRepository;
+    private final VoteService voteService;
 
-    public ProfileRestController(UserRepository userRepository, RestaurantRepository restaurantRepository, DishRepository dishRepository) {
+    public ProfileRestController(UserRepository userRepository, RestaurantRepository restaurantRepository, DishRepository dishRepository, VoteService voteService) {
         this.userRepository = userRepository;
         this.restaurantRepository = restaurantRepository;
         this.dishRepository = dishRepository;
+        this.voteService = voteService;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -55,5 +59,10 @@ public class ProfileRestController {
     @GetMapping(value = "/restaurants/{id}/menu")
     public List<Dish> getMenu(@PathVariable Long id) {
         return dishRepository.findAllByRestaurantIdAndDate(id, LocalDate.now());
+    }
+
+    @PostMapping(value = "/vote", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public VoteTo vote(@RequestBody VoteTo voteTo) {
+        return voteService.save(voteTo);
     }
 }

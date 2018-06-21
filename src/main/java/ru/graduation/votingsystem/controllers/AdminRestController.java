@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.graduation.votingsystem.domain.User;
 import ru.graduation.votingsystem.repositories.UserRepository;
+import ru.graduation.votingsystem.service.VoteService;
+import ru.graduation.votingsystem.to.VoteTo;
 
 import java.net.URI;
 import java.util.List;
@@ -18,9 +20,11 @@ public class AdminRestController {
     static final String REST_URL = "/rest/admin/users";
 
     private final UserRepository userRepository;
+    private final VoteService voteService;
 
-    public AdminRestController(UserRepository userRepository) {
+    public AdminRestController(UserRepository userRepository, VoteService voteService) {
         this.userRepository = userRepository;
+        this.voteService = voteService;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -63,5 +67,10 @@ public class AdminRestController {
     @GetMapping(value = "/by", produces = MediaType.APPLICATION_JSON_VALUE)
     public User getByMail(@RequestParam("email") String email) {
         return userRepository.findByEmail(email);
+    }
+
+    @GetMapping("/vote")
+    public List<VoteTo> getAllVote(@RequestParam("userId") long userId) {
+        return voteService.getAllForUser(userId);
     }
 }
