@@ -2,7 +2,6 @@ package ru.graduation.votingsystem.controllers;
 
 import org.junit.Test;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.ResultActions;
 import ru.graduation.votingsystem.domain.Role;
 import ru.graduation.votingsystem.domain.User;
@@ -46,7 +45,6 @@ public class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DirtiesContext
     public void testCreate() throws Exception {
         User expected = new User(null, "new", "new@gmail.com", "newPass", Role.ROLE_USER, Role.ROLE_ADMIN);
         ResultActions action = mockMvc.perform(post(REST_URL)
@@ -63,7 +61,6 @@ public class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DirtiesContext
     public void testDelete() throws Exception {
         mockMvc.perform(delete(REST_URL+USER_ID))
                 .andDo(print())
@@ -72,7 +69,6 @@ public class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DirtiesContext
     public void testUpdate() throws Exception {
         User updated = new User(USER);
         updated.setEmail("updated@gmail.com");
@@ -101,5 +97,12 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(content().json(JsonUtil.writeIgnoreProps(Collections.singletonList(RETURNED_VOTETO_OTHERUSER))));
 
+    }
+
+    @Test
+    public void testGetNotFound() throws Exception {
+        mockMvc.perform(get(REST_URL+1))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
     }
 }

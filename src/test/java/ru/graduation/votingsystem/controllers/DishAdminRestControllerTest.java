@@ -2,7 +2,6 @@ package ru.graduation.votingsystem.controllers;
 
 import org.junit.Test;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.ResultActions;
 import ru.graduation.votingsystem.domain.Dish;
 
@@ -43,7 +42,6 @@ public class DishAdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DirtiesContext
     public void testCreate() throws Exception {
         Dish created = new Dish(null, "Pork chop", new BigDecimal("7.27"));
         ResultActions resultActions = mockMvc.perform(post(REST_URL + IN_VINO_ID + "/menu")
@@ -60,7 +58,6 @@ public class DishAdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DirtiesContext
     public void testUpdate() throws Exception {
         Dish updated = new Dish(DISH3_FALCONE);
         updated.setName("updated Pasta Carbonara");
@@ -73,7 +70,6 @@ public class DishAdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DirtiesContext
     public void testDelete() throws Exception {
         mockMvc.perform(delete(REST_URL+IN_VINO_ID+"/menu/"+DISH2_INVINO_ID))
                 .andDo(print())
@@ -99,5 +95,12 @@ public class DishAdminRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(writeIgnoreProps(Arrays.asList(DISH3_FALCONE, DISH4_FALCONE), "restaurant")));
+    }
+
+    @Test
+    public void getHistoryToInvalidRestaurant() throws Exception {
+        mockMvc.perform(get(REST_URL+1+"/menu/history"))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
     }
 }

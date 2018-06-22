@@ -3,12 +3,11 @@ package ru.graduation.votingsystem.controllers;
 import config.TestUtil;
 import org.junit.Test;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import ru.graduation.votingsystem.domain.User;
 import ru.graduation.votingsystem.json.JsonUtil;
 import ru.graduation.votingsystem.to.VoteTo;
 
-import java.time.*;
+import java.time.LocalTime;
 import java.util.Arrays;
 
 import static config.DishTestData.DISH1_FALCONE;
@@ -41,7 +40,6 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DirtiesContext
     public void testUpdate() throws Exception {
         User updated = new User(USER);
         updated.setEmail("updated@email.com");
@@ -55,7 +53,6 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DirtiesContext
     public void testDelete() throws Exception {
         mockMvc.perform(delete(REST_URL))
                 .andExpect(status().isNoContent());
@@ -83,7 +80,6 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
     @Test
     public void testVote() throws Exception {
         if (LocalTime.now().isBefore(LocalTime.of(11, 0))) {
-            System.out.println(LocalDate.now());
             VoteTo voteTo = new VoteTo(FALCONE);
             mockMvc.perform(post(REST_URL + "/vote")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -93,5 +89,26 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andExpect(content().json(JsonUtil.writeIgnoreProps(CREATED)));
         }
+    }
+
+    @Test
+    public void testVoteTimeExpired() throws Exception {
+        if (LocalTime.now().isAfter(LocalTime.of(11, 0))) {
+            VoteTo voteTo = new VoteTo(FALCONE);
+            mockMvc.perform(post(REST_URL + "/vote")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(JsonUtil.writeValue(voteTo)))
+                    .andDo(print())
+                    .andExpect(status().isUnprocessableEntity());
+        }
+    }
+
+    @Test
+    public void testUpdateInvalid() throws Exception {
+        User updated = new User(USER);
+        updated.setPassword("");
+        mockMvc.perform(put(REST_URL).contentType(MediaType.APPLICATION_JSON).content(JsonUtil.writeValue(updated)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
     }
 }

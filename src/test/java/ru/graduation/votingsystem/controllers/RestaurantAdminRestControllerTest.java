@@ -2,7 +2,6 @@ package ru.graduation.votingsystem.controllers;
 
 import org.junit.Test;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.ResultActions;
 import ru.graduation.votingsystem.domain.Restaurant;
 import ru.graduation.votingsystem.json.JsonUtil;
@@ -43,7 +42,6 @@ public class RestaurantAdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DirtiesContext
     public void testCreate() throws Exception {
         Restaurant created = new Restaurant("KFC");
         ResultActions action = mockMvc.perform(post(REST_URL).contentType(MediaType.APPLICATION_JSON).content(writeValue(created)))
@@ -54,7 +52,6 @@ public class RestaurantAdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DirtiesContext
     public void testUpdate() throws Exception {
         Restaurant updated = new Restaurant(BELLA_ROSA);
         updated.setName("KFC");
@@ -65,7 +62,6 @@ public class RestaurantAdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DirtiesContext
     public void testDelete() throws Exception {
         mockMvc.perform(delete(REST_URL+VERANDA_ID))
                 .andDo(print())
@@ -80,5 +76,12 @@ public class RestaurantAdminRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(writeValue(VERANDA)));
+    }
+
+    @Test
+    public void testGetNotFound() throws Exception {
+        mockMvc.perform(get(REST_URL+1))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
     }
 }

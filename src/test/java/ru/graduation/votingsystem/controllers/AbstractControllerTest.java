@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import ru.graduation.votingsystem.VotingSystemApplication;
 import ru.graduation.votingsystem.repositories.DishRepository;
 import ru.graduation.votingsystem.repositories.RestaurantRepository;
@@ -24,6 +25,7 @@ import ru.graduation.votingsystem.service.VoteService;
 @SpringBootTest(
         classes = VotingSystemApplication.class)
 @AutoConfigureMockMvc
+@Transactional
 public abstract class AbstractControllerTest {
 
     @ClassRule
