@@ -9,9 +9,13 @@ import ru.graduation.votingsystem.domain.Restaurant;
 import ru.graduation.votingsystem.domain.Vote;
 import ru.graduation.votingsystem.repositories.RestaurantRepository;
 import ru.graduation.votingsystem.service.VoteService;
+import ru.graduation.votingsystem.util.exception.NotFoundException;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+
+import static ru.graduation.votingsystem.util.ValidationUtil.checkNotFoundWithId;
 
 /**
  * Created by yriyMitsiuk on 12.06.2018.
@@ -37,12 +41,12 @@ public class RestaurantAdminRestController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Restaurant get(@PathVariable long id) {
-        return restaurantRepository.findById(id).orElse(null);
+        return restaurantRepository.findById(id).orElseThrow(() -> new NotFoundException("Not found entity with id = " + id));
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
-    public ResponseEntity<Restaurant> create(@RequestBody Restaurant restaurant) {
+    public ResponseEntity<Restaurant> create(@Valid @RequestBody Restaurant restaurant) {
         Restaurant created = restaurantRepository.save(restaurant);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
@@ -51,7 +55,7 @@ public class RestaurantAdminRestController {
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Restaurant> update(@RequestBody Restaurant restaurant) {
+    public ResponseEntity<Restaurant> update(@Valid @RequestBody Restaurant restaurant) {
         Restaurant updated = restaurantRepository.save(restaurant);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
@@ -62,16 +66,18 @@ public class RestaurantAdminRestController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable long id) {
+        checkNotFoundWithId(restaurantRepository.existsById(id), id);
         restaurantRepository.deleteById(id);
     }
 
     @GetMapping(value = "/by", produces = MediaType.APPLICATION_JSON_VALUE)
     public Restaurant getByName(@RequestParam("name") String name) {
-        return restaurantRepository.findByName(name);
+        return restaurantRepository.findByName(name).orElseThrow(() -> new NotFoundException("Not found entity with name = " + name));
     }
 
     @GetMapping("/vote")
     public List<Vote> getAllVoteForRestaurants(@RequestParam("restaurantId") long restaurantId) {
+        checkNotFoundWithId(restaurantRepository.existsById(restaurantId), restaurantId);
         return voteService.getAllForRestaurant(restaurantId);
     }
 }

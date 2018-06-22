@@ -51,7 +51,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        assertMatch(new User(userRepository.findByEmail("updated@email.com")), updated);
+        assertMatch(new User(userRepository.findByEmail("updated@email.com").get()), updated);
     }
 
     @Test

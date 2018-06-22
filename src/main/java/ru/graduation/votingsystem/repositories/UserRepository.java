@@ -3,7 +3,8 @@ package ru.graduation.votingsystem.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.graduation.votingsystem.domain.User;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+import java.util.Optional;
 
-    User findByEmail(String email);
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByEmail(String email);
 }

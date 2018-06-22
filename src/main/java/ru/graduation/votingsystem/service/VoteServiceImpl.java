@@ -1,17 +1,14 @@
 package ru.graduation.votingsystem.service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.graduation.votingsystem.AuthorizedUser;
 import ru.graduation.votingsystem.domain.Vote;
-import ru.graduation.votingsystem.domain.VoteIdentity;
 import ru.graduation.votingsystem.repositories.UserRepository;
 import ru.graduation.votingsystem.repositories.VoteRepository;
 import ru.graduation.votingsystem.to.VoteTo;
 import ru.graduation.votingsystem.util.VoteUtil;
+import ru.graduation.votingsystem.util.exception.VotingTimeExpiredException;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
@@ -34,7 +31,7 @@ public class VoteServiceImpl implements VoteService {
         Vote vote = VoteUtil.createVoteFromVoteTo(voteTo);
         vote.getIdentity().setUser(userRepository.getOne(AuthorizedUser.id()));
         if (voteRepository.existsById(vote.getIdentity()) && LocalTime.now().isAfter(LocalTime.of(11, 0)))
-            return null;
+            throw new VotingTimeExpiredException("Today the voting time has expired.");
         return VoteUtil.asTo(voteRepository.save(vote));
     }
 

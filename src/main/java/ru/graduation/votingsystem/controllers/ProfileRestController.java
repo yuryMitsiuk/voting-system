@@ -13,8 +13,12 @@ import ru.graduation.votingsystem.repositories.UserRepository;
 import ru.graduation.votingsystem.service.VoteService;
 import ru.graduation.votingsystem.to.VoteTo;
 
+
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
+
+import static ru.graduation.votingsystem.util.ValidationUtil.checkNotFound;
 
 @RestController
 @RequestMapping(ProfileRestController.REST_URL)
@@ -36,11 +40,11 @@ public class ProfileRestController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public User get() {
-        return userRepository.findById(AuthorizedUser.id()).orElse(null);
+        return userRepository.findById(AuthorizedUser.id()).get();
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void update(@RequestBody User user) {
+    public void update(@Valid @RequestBody User user) {
         if (user.getId() == AuthorizedUser.id())
             userRepository.save(user);
     }
@@ -58,11 +62,12 @@ public class ProfileRestController {
 
     @GetMapping(value = "/restaurants/{id}/menu")
     public List<Dish> getMenu(@PathVariable Long id) {
+        checkNotFound(restaurantRepository.existsById(id), " id = "+ id);
         return dishRepository.findAllByRestaurantIdAndDate(id, LocalDate.now());
     }
 
     @PostMapping(value = "/vote", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public VoteTo vote(@RequestBody VoteTo voteTo) {
+    public VoteTo vote(@Valid @RequestBody VoteTo voteTo) {
         return voteService.save(voteTo);
     }
 }
