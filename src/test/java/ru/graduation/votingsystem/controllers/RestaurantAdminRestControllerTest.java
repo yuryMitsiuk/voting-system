@@ -10,6 +10,9 @@ import java.util.Arrays;
 
 import static config.RestaurantTestData.*;
 import static config.TestUtil.readFromJson;
+import static config.TestUtil.userHttpBasic;
+import static config.UserTestData.ADMIN;
+import static config.UserTestData.USER;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -25,7 +28,7 @@ public class RestaurantAdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testGetAll() throws Exception {
-        mockMvc.perform(get(REST_URL))
+        mockMvc.perform(get(REST_URL).with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -34,7 +37,7 @@ public class RestaurantAdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testGet() throws Exception {
-        mockMvc.perform(get(REST_URL+VERANDA_ID))
+        mockMvc.perform(get(REST_URL+VERANDA_ID).with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -44,7 +47,7 @@ public class RestaurantAdminRestControllerTest extends AbstractControllerTest {
     @Test
     public void testCreate() throws Exception {
         Restaurant created = new Restaurant("KFC");
-        ResultActions action = mockMvc.perform(post(REST_URL).contentType(MediaType.APPLICATION_JSON).content(writeValue(created)))
+        ResultActions action = mockMvc.perform(post(REST_URL).contentType(MediaType.APPLICATION_JSON).content(writeValue(created)).with(userHttpBasic(ADMIN)))
                 .andExpect(status().isCreated());
         Restaurant returned = readFromJson(action, Restaurant.class);
         created.setId(returned.getId());
@@ -55,7 +58,7 @@ public class RestaurantAdminRestControllerTest extends AbstractControllerTest {
     public void testUpdate() throws Exception {
         Restaurant updated = new Restaurant(BELLA_ROSA);
         updated.setName("KFC");
-        mockMvc.perform(put(REST_URL).contentType(MediaType.APPLICATION_JSON).content(writeValue(updated)))
+        mockMvc.perform(put(REST_URL).contentType(MediaType.APPLICATION_JSON).content(writeValue(updated)).with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isCreated());
         assertMatch(restaurantRepository.findAll(), updated, PERFETTO, VERANDA, IN_VINO, FALCONE);
@@ -63,7 +66,7 @@ public class RestaurantAdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testDelete() throws Exception {
-        mockMvc.perform(delete(REST_URL+VERANDA_ID))
+        mockMvc.perform(delete(REST_URL+VERANDA_ID).with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
         assertMatch(restaurantRepository.findAll(), BELLA_ROSA, PERFETTO, IN_VINO, FALCONE);
@@ -71,7 +74,7 @@ public class RestaurantAdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testGetByName() throws Exception {
-        mockMvc.perform(get(REST_URL+"/by?name="+VERANDA.getName()))
+        mockMvc.perform(get(REST_URL+"/by?name="+VERANDA.getName()).with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -80,8 +83,15 @@ public class RestaurantAdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testGetNotFound() throws Exception {
-        mockMvc.perform(get(REST_URL+1))
+        mockMvc.perform(get(REST_URL+1).with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    public void testForbidden() throws Exception {
+        mockMvc.perform(delete(REST_URL+VERANDA_ID).with(userHttpBasic(USER)))
+                .andDo(print())
+                .andExpect(status().isForbidden());
     }
 }

@@ -1,5 +1,6 @@
 package ru.graduation.votingsystem.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.util.CollectionUtils;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -22,10 +23,8 @@ public class User extends AbstractNamedEntity {
     @Column(name = "password", nullable = false)
     @NotBlank
     @Size(min = 5, max = 100)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
-
-    @Column(name = "votedtoday", nullable = false, columnDefinition = "bool default false")
-    private boolean votedToday = false;
 
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
@@ -37,18 +36,17 @@ public class User extends AbstractNamedEntity {
     }
 
     public User(User user) {
-        this(user.getId(), user.getName(), user.getEmail(), user.getPassword(), user.isVotedToday(), user.getRoles());
+        this(user.getId(), user.getName(), user.getEmail(), user.getPassword(), user.getRoles());
     }
 
     public User(Long id, String name, String email, String password, Role role, Role... roles) {
-        this(id, name, email, password, false, EnumSet.of(role, roles));
+        this(id, name, email, password, EnumSet.of(role, roles));
     }
 
-    public User(Long id, String name, String email, String password, boolean votedToday, Set<Role> roles) {
+    public User(Long id, String name, String email, String password, Set<Role> roles) {
         super(id, name);
         this.email = email;
         this.password = password;
-        this.votedToday = votedToday;
         this.roles = roles;
     }
 
@@ -68,14 +66,6 @@ public class User extends AbstractNamedEntity {
         this.password = password;
     }
 
-    public boolean isVotedToday() {
-        return votedToday;
-    }
-
-    public void setVotedToday(boolean votedToday) {
-        this.votedToday = votedToday;
-    }
-
     public Set<Role> getRoles() {
         return roles;
     }
@@ -90,7 +80,6 @@ public class User extends AbstractNamedEntity {
                 "id=" + id +
                 ", email=" + email +
                 ", name=" + name +
-                ", votedToday=" + votedToday +
                 ", roles=" + roles +
                 ')';
     }

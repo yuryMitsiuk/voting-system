@@ -3,6 +3,7 @@ package config;
 import org.assertj.core.api.Assertions;
 import ru.graduation.votingsystem.domain.Role;
 import ru.graduation.votingsystem.domain.User;
+import ru.graduation.votingsystem.json.JsonUtil;
 
 import java.util.Arrays;
 
@@ -30,6 +31,10 @@ public class UserTestData {
 
     public static void assertMatch(Iterable<User> actual, Iterable<User> expected) {
         Assertions.assertThat(actual).isEqualTo(expected);
+    }
+
+    public static String jsonWithPassword(User user, String passw) {
+        return JsonUtil.writeAdditionProps(user, "password", passw);
     }
 
 }

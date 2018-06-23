@@ -2,6 +2,7 @@ package ru.graduation.votingsystem.bootstrap;
 
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.graduation.votingsystem.domain.*;
 import ru.graduation.votingsystem.repositories.DishRepository;
@@ -20,12 +21,14 @@ public class Bootstrap implements ApplicationListener<ContextRefreshedEvent> {
     private final RestaurantRepository restaurantRepository;
     private final DishRepository dishRepository;
     private final VoteRepository voteRepository;
+    private final PasswordEncoder encoder;
 
-    public Bootstrap(UserRepository userRepository, RestaurantRepository restaurantRepository, DishRepository dishRepository, VoteRepository voteRepository) {
+    public Bootstrap(UserRepository userRepository, RestaurantRepository restaurantRepository, DishRepository dishRepository, VoteRepository voteRepository, PasswordEncoder encoder) {
         this.userRepository = userRepository;
         this.restaurantRepository = restaurantRepository;
         this.dishRepository = dishRepository;
         this.voteRepository = voteRepository;
+        this.encoder = encoder;
     }
 
     @Override
@@ -36,9 +39,9 @@ public class Bootstrap implements ApplicationListener<ContextRefreshedEvent> {
     }
 
     private void loadUsers() {
-        User user = new User(100000L, "user", "user@gmail.com", "password", Role.ROLE_USER);
-        User otheruser = new User(100001L, "otheruser", "otheruser@yahoo.com", "otherpassword", Role.ROLE_USER);
-        User admin = new User(100002L, "admin", "admin@yandex.ru", "password", Role.ROLE_USER, Role.ROLE_ADMIN);
+        User user = new User(100000L, "user", "user@gmail.com", encoder.encode("password"), Role.ROLE_USER);
+        User otheruser = new User(100001L, "otheruser", "otheruser@yahoo.com", encoder.encode("otherpassword"), Role.ROLE_USER);
+        User admin = new User(100002L, "admin", "admin@yandex.ru", encoder.encode("password"), Role.ROLE_USER, Role.ROLE_ADMIN);
         Stream.of(user, otheruser, admin).forEachOrdered(userRepository::save);
     }
 

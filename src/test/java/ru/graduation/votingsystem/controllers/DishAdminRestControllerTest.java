@@ -12,6 +12,8 @@ import static config.DishTestData.*;
 import static config.RestaurantTestData.FALCONE_ID;
 import static config.RestaurantTestData.IN_VINO_ID;
 import static config.TestUtil.readFromJson;
+import static config.TestUtil.userHttpBasic;
+import static config.UserTestData.ADMIN;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -25,7 +27,7 @@ public class DishAdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testGetAllByRestaurant() throws Exception {
-        mockMvc.perform(get(REST_URL+FALCONE_ID+"/menu"))
+        mockMvc.perform(get(REST_URL+FALCONE_ID+"/menu").with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -34,7 +36,7 @@ public class DishAdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testGetByRestaurant() throws Exception {
-        mockMvc.perform(get(REST_URL+IN_VINO_ID+"/menu/"+DISH1_INVINO_ID))
+        mockMvc.perform(get(REST_URL+IN_VINO_ID+"/menu/"+DISH1_INVINO_ID).with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -46,7 +48,7 @@ public class DishAdminRestControllerTest extends AbstractControllerTest {
         Dish created = new Dish(null, "Pork chop", new BigDecimal("7.27"));
         ResultActions resultActions = mockMvc.perform(post(REST_URL + IN_VINO_ID + "/menu")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(writeValue(created)))
+                .content(writeValue(created)).with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isCreated());
 
@@ -63,7 +65,7 @@ public class DishAdminRestControllerTest extends AbstractControllerTest {
         updated.setName("updated Pasta Carbonara");
         updated.setPrice(new BigDecimal("2.95"));
         mockMvc.perform(put(REST_URL+FALCONE_ID+"/menu")
-                .contentType(MediaType.APPLICATION_JSON).content(writeIgnoreProps(updated, "restaurant")))
+                .contentType(MediaType.APPLICATION_JSON).content(writeIgnoreProps(updated, "restaurant")).with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isCreated());
         assertMatch(dishRepository.findAllByRestaurantId(FALCONE_ID), DISH1_FALCONE, DISH2_FALCONE, updated, DISH4_FALCONE);
@@ -71,7 +73,7 @@ public class DishAdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testDelete() throws Exception {
-        mockMvc.perform(delete(REST_URL+IN_VINO_ID+"/menu/"+DISH2_INVINO_ID))
+        mockMvc.perform(delete(REST_URL+IN_VINO_ID+"/menu/"+DISH2_INVINO_ID).with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
         assertMatch(dishRepository.findAllByRestaurantId(IN_VINO_ID), DISH1_INVINO, DISH3_INVINO, DISH4_INVINO);
@@ -79,7 +81,7 @@ public class DishAdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void getHistory() throws Exception {
-        mockMvc.perform(get(REST_URL+FALCONE_ID+"/menu/history"))
+        mockMvc.perform(get(REST_URL+FALCONE_ID+"/menu/history").with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -90,7 +92,7 @@ public class DishAdminRestControllerTest extends AbstractControllerTest {
     public void getBetween() throws Exception {
         mockMvc.perform(get(REST_URL+FALCONE_ID+"/menu/filter")
                 .param("from", String.valueOf(DISH4_FALCONE.getDate().minusDays(1L)))
-                .param("to", String.valueOf(DISH4_FALCONE.getDate().plusDays(1L))))
+                .param("to", String.valueOf(DISH4_FALCONE.getDate().plusDays(1L))).with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -99,7 +101,7 @@ public class DishAdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void getHistoryToInvalidRestaurant() throws Exception {
-        mockMvc.perform(get(REST_URL+1+"/menu/history"))
+        mockMvc.perform(get(REST_URL+1+"/menu/history").with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity());
     }

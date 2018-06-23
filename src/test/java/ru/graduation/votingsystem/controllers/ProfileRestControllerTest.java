@@ -13,6 +13,7 @@ import java.util.Arrays;
 import static config.DishTestData.DISH1_FALCONE;
 import static config.DishTestData.DISH2_FALCONE;
 import static config.RestaurantTestData.*;
+import static config.TestUtil.userHttpBasic;
 import static config.UserTestData.*;
 import static config.UserTestData.assertMatch;
 import static config.VoteTestData.CREATED;
@@ -32,7 +33,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
     @Test
     public void testGet() throws Exception {
         TestUtil.print(
-            mockMvc.perform(get(REST_URL))
+            mockMvc.perform(get(REST_URL).with(userHttpBasic(USER)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(writeIgnoreProps(USER)))
@@ -45,7 +46,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
         updated.setEmail("updated@email.com");
         updated.setName("updatedName");
         updated.setPassword("updatedPass");
-        mockMvc.perform(put(REST_URL).contentType(MediaType.APPLICATION_JSON).content(JsonUtil.writeValue(updated)))
+        mockMvc.perform(put(REST_URL).contentType(MediaType.APPLICATION_JSON).content(jsonWithPassword(updated, "updatedPass")).with(userHttpBasic(USER)))
                 .andDo(print())
                 .andExpect(status().isOk());
 
@@ -54,14 +55,14 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testDelete() throws Exception {
-        mockMvc.perform(delete(REST_URL))
+        mockMvc.perform(delete(REST_URL).with(userHttpBasic(USER)))
                 .andExpect(status().isNoContent());
         assertMatch(userRepository.findAll(), OTHERUSER, ADMIN);
     }
 
     @Test
     public void testGetAllRestaurants() throws Exception {
-        mockMvc.perform(get(REST_URL+"/restaurants"))
+        mockMvc.perform(get(REST_URL+"/restaurants").with(userHttpBasic(USER)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -70,7 +71,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testGetMenu() throws Exception {
-        mockMvc.perform(get(REST_URL+"/restaurants/"+FALCONE_ID+"/menu"))
+        mockMvc.perform(get(REST_URL+"/restaurants/"+FALCONE_ID+"/menu").with(userHttpBasic(USER)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -83,7 +84,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
             VoteTo voteTo = new VoteTo(FALCONE);
             mockMvc.perform(post(REST_URL + "/vote")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(JsonUtil.writeValue(voteTo)))
+                    .content(JsonUtil.writeValue(voteTo)).with(userHttpBasic(USER)))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -97,7 +98,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
             VoteTo voteTo = new VoteTo(FALCONE);
             mockMvc.perform(post(REST_URL + "/vote")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(JsonUtil.writeValue(voteTo)))
+                    .content(JsonUtil.writeValue(voteTo)).with(userHttpBasic(USER)))
                     .andDo(print())
                     .andExpect(status().isUnprocessableEntity());
         }
@@ -107,8 +108,15 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
     public void testUpdateInvalid() throws Exception {
         User updated = new User(USER);
         updated.setPassword("");
-        mockMvc.perform(put(REST_URL).contentType(MediaType.APPLICATION_JSON).content(JsonUtil.writeValue(updated)))
+        mockMvc.perform(put(REST_URL).contentType(MediaType.APPLICATION_JSON).content(JsonUtil.writeValue(updated)).with(userHttpBasic(USER)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    public void testUnauthorized () throws Exception {
+        mockMvc.perform(get(REST_URL+"/restaurants"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 }
