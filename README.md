@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/yuryMitsiuk/voting-system.svg?branch=master)](https://travis-ci.org/yuryMitsiuk/voting-system)
+
 ## Implementation of test task
 
 Design and implement a REST API using Hibernate/Spring/SpringMVC (or Spring-Boot) **without frontend**.
