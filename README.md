@@ -20,3 +20,13 @@ Build a voting system for deciding where to have lunch.
 Each restaurant provides new menu each day.
 
 As a result, provide a link to github repository. It should contain the code, README.md with API documentation and couple curl commands to test it.
+
+---
+
+## Credentionals
+
+  User(role, email, password):
+  * USER, "user@gmail.com", "password"
+  * USER, "otheruser@yahoo.com", "otherpassword"
+  * ADMIN, "admin@yandex.ru", "password"
+  
